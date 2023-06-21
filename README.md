@@ -22,6 +22,6 @@ Other useful resources on SPF :
 
 Run without arguments to show the full syntax (including how to pass your Gandi API key).
 
-Put in a *cron* to run on a regular basis and check if there were any change in the IP addresses of the email providers.
+Put in a *cron job* to run on a regular basis and check if there was any change in the IP addresses of the email providers.
 
 Without flattening, the 5 email providers from this example would produce 12 DNS requests, out of maximum 10 allowed.
