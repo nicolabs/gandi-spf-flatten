@@ -4,6 +4,8 @@ Flatten SPF records with [Gandi LiveDNS API](https://api.gandi.net/docs/livedns/
 
 In its current state, the script is hard-coded for Gandi API but you may reuse and adapt the code for other domain providers.
 
+I've taken one function from [cetanu/sender_policy_flattener](https://github.com/cetanu/sender_policy_flattener/blob/master/sender_policy_flattener/crawler.py)
+
 ## About SPF
 
 This article describes the problem : https://smalltechstack.com/blog/flattening-your-spf-record
