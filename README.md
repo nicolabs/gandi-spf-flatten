@@ -1,6 +1,8 @@
 # gandi-spf-flatten
 
-Flatten SPF records with Gandi LiveDNS API
+Flatten SPF records with [Gandi LiveDNS API](https://api.gandi.net/docs/livedns/).
+
+In its current state, the script is hard-coded for Gandi API but you may reuse and adapt the code for other domain providers.
 
 ## About SPF
 
