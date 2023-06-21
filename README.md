@@ -12,6 +12,10 @@ This article describes the problem : https://smalltechstack.com/blog/flattening-
 
 There are (were ?) some free online services (e.g. https://dmarcly.com/blog/spf-permerror-too-many-dns-lookups-when-spf-record-exceeds-10-dns-lookup-limit) but apparently you have to register one account different per domain, and I've tried but never received the confirmation email...
 
+Other useful resources on SPF :
+- [SPF Record Syntax](https://dmarcian.com/spf-syntax-table/)
+- [Can I have a TXT or SPF record longer than 255 characters?](https://kb.isc.org/docs/aa-00356)
+
 ## Example
 
     python gandi-flatten-spf.py -d mydomain.com -e _spf.mailfence.com _spf.google.com _spf.mail.yahoo.com _mailcust.gandi.net _spf.protonmail.ch -l DEBUG
