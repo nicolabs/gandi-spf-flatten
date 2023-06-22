@@ -1,4 +1,3 @@
 argparse
-numpy
 requests
 sender_policy_flattener
