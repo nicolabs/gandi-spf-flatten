@@ -9,7 +9,6 @@ from dns import resolver
 from dns import name
 from sender_policy_flattener.crawler import crawl
 from sender_policy_flattener.formatting import ips_to_spf_strings
-import numpy
 
 
 DEFAULT_LOGLEVEL = logging.getLevelName(logging.INFO)
@@ -156,10 +155,11 @@ def isRecordsChanged( _recordsBefore, _recordsAfter ):
     sortedAfter = sorted(_recordsAfter)
     for r in range(len(_recordsBefore)):
         if RE_SPF.search(sortedBefore[r]) and RE_SPF.search(sortedAfter[r]):
-            listBefore = re.split( r'\s+', sortedBefore[r] )
-            listAfter = re.split( r'\s+', sortedAfter[r] )
-            if not numpy.array_equal( sorted(listBefore), sorted(listAfter) ):
-                return True
+            listBefore = sorted( re.split( r'\s+', sortedBefore[r] ) )
+            listAfter = sorted( re.split( r'\s+', sortedAfter[r] ) )
+            for i in range(len(listBefore)):
+                if listBefore[i] != listAfter[i]:
+                    return True
         else:
             if sortedAfter[r] != sortedBefore[r]:
                 return True
