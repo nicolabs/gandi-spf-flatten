@@ -30,11 +30,10 @@ Without flattening, the 5 email providers from this example would produce 12 DNS
 
 The following cron entry will :
 1. be triggered every hour
-2. wait for random minutes
-3. run the script for the given domain
-4. exit if running more than 3 minutes (timeout)
-5. write debug logs into /var/log/
+2. run the script for the given domain (i.e. flatten its *spf* record)
+4. timeout if running more than 3 minutes
+5. write debug logs into `/var/log/gandi-flatten-spf-mydomain.com.log`
 
-Make sure to define your API key (may be passed as an environment variable).
+Make sure to define the `GANDI_APIKEY` environment variable with the Gandi API key.
 
-    @hourly sleep $((RANDOM*60/32768))m ; timeout --signal=9 3m /opt/gandi-flatten-spf.py -k ${GANDI_APIKEY} -d mydomain.com -e _spf.mailfence.com _spf.google.com _spf.mail.yahoo.com _mailcust.gandi.net _spf.protonmail.ch -l DEBUG >/var/log/gandi-flatten-spf-mydomain.com.log 2>&1
+    @hourly timeout --signal=9 3m /opt/gandi-flatten-spf.py -k ${GANDI_APIKEY} -d mydomain.com -e _spf.mailfence.com _spf.google.com _spf.mail.yahoo.com _mailcust.gandi.net _spf.protonmail.ch -l DEBUG >/var/log/gandi-flatten-spf-mydomain.com.log 2>&1
