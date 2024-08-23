@@ -48,23 +48,27 @@ def spf2ips(records, domain, resolvers):
 """
     Builds a valid TXT record for SPF by resolving DNS into IP addresses
 
-    _emailProviders: list of SPF domains of the email providers you want to add to SPF
+    _emailProvidersToIp: list of SPF domains to convert to a list of IPs (of the email providers you want to add to SPF)
+    _emailProvidersToInclude: : list of SPF domains NOT to convert to IP
     _nameServers: list of DNS you want to use to resolve domains into IP addresses
 
     Returns the TXT record as a string
 """
-def createFlatSpfRecord( _emailProviders, _nameServers ):
+def createFlatSpfRecord( _emailProvidersToIp, _emailProvidersToInclude, _nameServers ):
 
     dnsResolver = resolver.Resolver()
     dnsResolver.nameservers = _nameServers
 
-    ips = []
-    for emailProvider in _emailProviders:
+    parts = []
 
-        ips = ips + spf2ips({emailProvider: 'txt'}, emailProvider, dnsResolver)
+    for emailProvider in _emailProvidersToIp:
+        parts = parts + spf2ips({emailProvider: 'txt'}, emailProvider, dnsResolver)
 
-    logging.debug("Flattened IPs : %s",ips)
-    return SPF_TEMPLATE.format( includes=" ".join(ips) )
+    for emailProvider in _emailProvidersToInclude:
+        parts = parts + ["include:" + emailProvider]
+
+    logging.debug("Flattened IPs : %s",parts)
+    return SPF_TEMPLATE.format( includes=" ".join(parts) )
 
 
 
@@ -187,8 +191,9 @@ def updateDns( _domain, _apikey, _txtRecords, _dryRun=False ):
 
 parser = argparse.ArgumentParser(description="Flatten SPF records using Gandi's Live DNS API")
 parser.add_argument('-d', '--domain', nargs='+', required=True, help="Domains you own from which to update the TXT record for SPF")
-parser.add_argument('-e', '--email-providers', nargs='+', required=True, help="E-mail providers' SPF domains to add to the TXT record")
-parser.add_argument('-k', '--apikey', help="Your Gandi API key (otherwise looks for the 'GANDI-APIKEY' environment variable)")
+parser.add_argument('-e', '--email-providers', nargs='+', required=True, help="E-mail providers' SPF domains to add to the TXT record AFTER CONVERSION to a list of IP addresses")
+parser.add_argument('-E', '--email-providers-as-is', nargs='+', required=True, help="E-mail providers' SPF domains to add to the TXT record AS-IS (no IP conversion)")
+parser.add_argument('-k', '--api-key', help="Your Gandi API key (otherwise looks for the 'GANDI_APIKEY' environment variable)")
 parser.add_argument('-r', '--dns', default=DEFAULT_DNS, nargs='+', help="DNS servers to use to resolve into IP addresses")
 parser.add_argument('-l', '--log-level', default=DEFAULT_LOGLEVEL, help="Log level")
 parser.add_argument('-L', '--load', help="A JSON file to load the result from Gandi's API instead of calling the API")
@@ -199,14 +204,14 @@ logging.basicConfig(level=logging.getLevelName(args.log_level))
 
 logging.debug(repr(args))
 
-if args.apikey:
-    apikey = args.apikey
+if args.api_key:
+    apikey = args.api_key
 else :
     apikey = os.environ['GANDI_APIKEY']
 
 
 
-flatSpf = createFlatSpfRecord(args.email_providers,args.dns)
+flatSpf = createFlatSpfRecord(args.email_providers,args.email_providers_as_is,args.dns)
 for domain in args.domain:
     if args.load:
         txts = file_getTxtRecords(args.load)
